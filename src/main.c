@@ -11,15 +11,12 @@ int main() {
 	pin_init();
 	
 	lcd_init();
-	
+
 	set_page(1);
-	set_col(0, 0);
-
-	lcd_data(0x00);
-	lcd_data(0x00);
-	while(1){
-
-	};
+	set_col(0, 0x5);
+	draw_image(*num, 45);
+	
+	while(1){};
 	return 0;
 }
 

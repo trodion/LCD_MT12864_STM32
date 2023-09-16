@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-/* Стандартное изображение от разработчиков дисплея */
-extern uint8_t MT_image[1024];
+extern uint8_t num[9][5];
+
 
 #endif

@@ -32,7 +32,12 @@ void lcd_init() {
 	lcd_cmd(0xA6);
 	lcd_cmd(0xC8);
 	lcd_cmd(0xA0);
-	lcd_cmd(0xAF);
+	
+    lcd_cmd(0x7F);
+    
+    DisplayOn;
+    /* Очистка дисплея */
+    lcd_clr();
 }
 
 
@@ -72,12 +77,13 @@ void lcd_clr() {
     }    
 }
 
-void draw_image(uint8_t* p) {
-	uint8_t x, y;
-    for (y = 0; y < 8; y++) {
-        lcd_cmd(0xB0 + y);//Выбор страницы
-        lcd_cmd(0x10); lcd_cmd(0x00);//Выбор нулевого столбца
-        for (x = 0; x < 128; x++) lcd_data((*p)++);
+void draw_image(uint8_t* p, uint16_t size){
+    for (uint16_t i = 0; i < size; ++i){
+        if (i % 5 == 0 && i != 0) {
+            for (uint8_t i = 0; i < 9; ++i) lcd_data(0xFF);
+        }
+        lcd_data(*p);
+        ++p;
     }
 }
 
@@ -88,6 +94,12 @@ void set_page(uint8_t page) {
 void set_col(uint8_t x, uint8_t y){
     lcd_cmd(0x10 + x); /* Старший полубайт столбца */
     lcd_cmd(0x00 + y); /* Младший полубайт столбца */
+}
+
+void draw_line(uint8_t page, uint8_t X, uint8_t Y) {
+    set_page(page);
+    set_col(X, Y);
+    lcd_data(0x00);
 }
 
 void ms_delay(uint32_t ms) {
