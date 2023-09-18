@@ -12,8 +12,6 @@
 #define SI_1    (GPIOA->ODR |= GPIO_ODR_ODR7)
 #define SI_0    (GPIOA->ODR &= ~GPIO_ODR_ODR7)
 
-#define DisplayOn  (lcd_cmd(0xAF))
-#define DisplayOFF (lcd_cmd(0xAE))
 
 void lcd_init() {
     Clr_RES;
@@ -31,10 +29,10 @@ void lcd_init() {
 	lcd_cmd(0x30);
 	lcd_cmd(0xA6);
 	lcd_cmd(0xC8);
-	lcd_cmd(0xA0);
-	
+	lcd_cmd(0xA0);	
     lcd_cmd(0x7F);
     
+    status = 0xFF;
     DisplayOn;
     /* Очистка дисплея */
     lcd_clr();

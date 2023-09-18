@@ -3,6 +3,13 @@
 
 #include <stdint.h>
 
+#define DisplayOn  (lcd_cmd(0xAF))
+#define DisplayOFF (lcd_cmd(0xAE))
+#define ChangeStatus (status = ~status)
+
+/* Статус дисплея вкл/выкл */
+uint8_t status;
+
 /* Инициализация и включение дисплея */
 void lcd_init();
 
@@ -20,9 +27,6 @@ void lcd_clr();
 
 /* Нарисовать изображение, определенное в массиве */
 void draw_image(uint8_t* p, uint16_t size);
-
-/* Выставить новую страницу и нулевой столбец */
-void next_page(uint8_t page);
 
 /* Выбор "страницы" (блок 8p*128p) */
 void set_page(uint8_t page);
