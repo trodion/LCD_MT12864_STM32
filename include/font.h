@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-extern uint8_t num[9][5];
+extern uint8_t num[10][5];
 
 
 #endif
