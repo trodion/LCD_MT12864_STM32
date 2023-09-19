@@ -1,8 +1,12 @@
 #include "stm32f1xx.h"
 #include "lcd_driver.h"
 #include "font.h"
+#include "graphics.h"
 
-#define START (TIM6->CR1 |= TIM_CR1_CEN)
+#define START draw_min();\ 
+			set_page(1); set_col(0x3, 0xC); lcd_data(0x99);\
+			draw_sec();\
+			(TIM6->CR1 |= TIM_CR1_CEN);\
 
 void pin_init(); /* Настройка выводов */
 void init_rcc(); /* Настройка системы тактирования */
@@ -21,26 +25,14 @@ void EXTI0_IRQHandler(void) {
 }
 
 void TIM6_DAC_IRQHandler(void){
-	static uint8_t* ptr = &num; /* Изображение хранится ввиде байтов в массиве, указатель на массив */
-	static uint8_t count = 5; /* Узнать, достигнут ли конец масива */
-	static uint8_t i = 0;
+	static uint8_t count = 0;
 	
-	if (count == 55){
-		ptr = &num;
-		count = 5;
-		if (++i == 10) i = 0;
+	draw_sec();
+	if (++count == 60) {
+		draw_min();
+		count = 0;
 	} 
-	if (count == 5){
-		set_page(1);
-		set_col(0x3, 0xE);
-		draw_image((ptr + i * 5), 5);
-	}
 
-	set_col(0x4, 0x4);
-	draw_image(ptr, 5);
-	ptr += 5;
-	count += 5;
-	
 	// Сбросить событие обновления
 	TIM6->SR &= ~TIM_SR_UIF;
 }
@@ -55,6 +47,7 @@ int main() {
 	init_TIM6();
 	
 	ms_delay(2000);
+	
 	START;
 
 	while(1){};
@@ -89,7 +82,7 @@ void pin_init() {
 	GPIOA->CRL &= ~GPIO_CRL_CNF7_0 & ~GPIO_CRL_CNF7_1;
 
 	GPIOC->CRH &= ~GPIO_CRH_CNF8_0 & ~GPIO_CRH_CNF8_1 ;
-    GPIOC->CRH |= GPIO_CRH_MODE8_0 | GPIO_CRH_MODE8_1;
+	GPIOC->CRH |= GPIO_CRH_MODE8_0 | GPIO_CRH_MODE8_1;
 }
 
 void init_NVIC() {
