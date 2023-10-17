@@ -1,6 +1,11 @@
 #include "graphics.h"
-#include "font.h"
-#include "lcd_driver.h"
+
+void start() {
+	draw_min(); 
+	set_page(1); set_col(0x3, 0xC); lcd_data(0x99);
+	draw_sec();
+	(TIM6->CR1 |= TIM_CR1_CEN);
+}
 
 void draw_sec() {
 	static uint8_t* ptr = &num; /* Изображение хранится ввиде байтов в массиве, указатель на массив */

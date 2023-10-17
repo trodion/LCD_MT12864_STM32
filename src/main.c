@@ -1,61 +1,35 @@
-#include "stm32f1xx.h"
+#include "stm32f100xb.h"
 #include "lcd_driver.h"
 #include "font.h"
 #include "graphics.h"
+#include "IRQHandlers.h"
+#include "timers.h"
 
-#define START draw_min();\ 
-			set_page(1); set_col(0x3, 0xC); lcd_data(0x99);\
-			draw_sec();\
-			(TIM6->CR1 |= TIM_CR1_CEN);\
 
 void pin_init(); /* Настройка выводов */
 void init_rcc(); /* Настройка системы тактирования */
 void init_NVIC(); /* Настройка контроллера прерываний */
-void init_TIM6(); /* Настройка таймера */
 
-void EXTI0_IRQHandler(void) {
-	/* Обработчик прерывания от линии EXTI0, 
-	   Подлкюченной к кнопке PA0 */
-	if (status) DisplayOFF;
-	else DisplayOn;
-	
-	ChangeStatus; // Поменять статус дисплея 
-	EXTI->PR &= 0x01; // Произошла генерация запроса на прерывания, нужно сбросить
-	ms_delay(1000);
-}
-
-void TIM6_DAC_IRQHandler(void){
-	static uint8_t count = 0;
-	
-	draw_sec();
-	if (++count == 60) {
-		draw_min();
-		count = 0;
-	} 
-
-	// Сбросить событие обновления
-	TIM6->SR &= ~TIM_SR_UIF;
-}
 
 int main() {
 	init_rcc();
 	pin_init();
 	
-	lcd_init();
+	lcd_init(); /* Инициализировать дисплей */
 	init_NVIC();
 
-	init_TIM6();
+	init_TIM6(); /* Настроить таймер для отсчета времени */
 	
 	ms_delay(2000);
 	
-	START;
+	start(); /* Запуск и первоначальная отрисовка */
 
 	while(1){};
 	return 0;
 }
 
 void init_rcc() {
-	/* Включение тактирования порта А, интерфейса SPI1 */
+	/* Включение тактирования портаов А, C, TIM6 */
 	RCC->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPCEN; 
 	RCC->APB1ENR |= RCC_APB1ENR_TIM6EN;
 }
@@ -93,14 +67,6 @@ void init_NVIC() {
     
     NVIC_SetPriority(EXTI0_IRQn, 0);
     NVIC_EnableIRQ(EXTI0_IRQn);
-}
-
-void init_TIM6() {
-	// Предделитель
-    TIM6->PSC = 8000 - 1;
-    // Максимальное значение ва CNT
-    TIM6->ARR = 1000;
-    // Разрешение генерации прерывания по событию сброса счетчика
-    TIM6->DIER |= TIM_DIER_UIE;
-    NVIC_EnableIRQ(TIM6_DAC_IRQn);  
+	NVIC_SetPriority(EXTI0_IRQn, 1);
+	NVIC_EnableIRQ(TIM6_DAC_IRQn);
 }
