@@ -75,10 +75,17 @@ void lcd_clr() {
     }    
 }
 
+void draw_byte(uint8_t page, uint8_t x, uint8_t y, uint8_t byte) {
+    set_page(page);
+    set_col(x, y);
+    lcd_data(byte);
+}
+
 void draw_image(uint8_t* p, uint16_t size){
     for (uint16_t i = 0; i < size; ++i){
         if (i % 5 == 0 && i != 0) {
-            for (uint8_t i = 0; i < 9; ++i) lcd_data(0xFF);
+            // for (uint8_t i = 0; i < 9; ++i) lcd_data(0xFF);
+            lcd_data(0xFF);
         }
         lcd_data(*p);
         ++p;

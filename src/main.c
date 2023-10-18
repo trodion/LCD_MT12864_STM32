@@ -17,11 +17,11 @@ int main() {
 	
 	lcd_init(); /* Инициализировать дисплей */
 	init_NVIC();
-
 	init_TIM6(); /* Настроить таймер для отсчета времени */
-	
+	init_TIM7();
+
 	ms_delay(2000);
-	
+
 	start(); /* Запуск и первоначальная отрисовка */
 
 	while(1){};
@@ -31,7 +31,7 @@ int main() {
 void init_rcc() {
 	/* Включение тактирования портаов А, C, TIM6 */
 	RCC->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPCEN; 
-	RCC->APB1ENR |= RCC_APB1ENR_TIM6EN;
+	RCC->APB1ENR |= RCC_APB1ENR_TIM6EN | RCC_APB1ENR_TIM7EN;
 }
 
 void pin_init() {
@@ -67,6 +67,6 @@ void init_NVIC() {
     
     NVIC_SetPriority(EXTI0_IRQn, 0);
     NVIC_EnableIRQ(EXTI0_IRQn);
-	NVIC_SetPriority(EXTI0_IRQn, 1);
+	NVIC_EnableIRQ(TIM7_IRQn);
 	NVIC_EnableIRQ(TIM6_DAC_IRQn);
 }

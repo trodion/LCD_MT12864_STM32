@@ -18,12 +18,19 @@ void EXTI0_IRQHandler(void) {
 void TIM6_DAC_IRQHandler(void){
 	static uint8_t count = 0;
 	
-	draw_sec();
+	draw_sec_white();
 	if (++count == 60) {
-		draw_min();
+		draw_min_white();
 		count = 0;
 	} 
 
 	// Сбросить событие обновления
 	TIM6->SR &= ~TIM_SR_UIF;
+}
+
+void TIM7_IRQHandler(void) {
+	static uint8_t count = 0;
+	
+	// Сбросить событие обновления
+	TIM7->SR &= ~TIM_SR_UIF;
 }
