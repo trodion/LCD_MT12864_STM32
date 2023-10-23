@@ -23,7 +23,8 @@ int main() {
 	ms_delay(2000);
 
 	start(); /* Запуск и первоначальная отрисовка */
-
+	//draw_min_white();
+	(TIM6->CR1 |= TIM_CR1_CEN);
 	while(1){};
 	return 0;
 }
