@@ -21,8 +21,9 @@ int main() {
 	init_TIM7();
 
 	ms_delay(2000);
-
-	start(); /* Запуск и первоначальная отрисовка */
+	draw_byte(1, 0x1, 0xC, 0x00);
+	draw_byte(1, 0x0, 0xE, 0x00);
+	//start(); /* Запуск и первоначальная отрисовка */
 	//draw_min_white();
 	(TIM6->CR1 |= TIM_CR1_CEN);
 	while(1){};
