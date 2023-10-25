@@ -3,6 +3,12 @@
 #include "lcd_driver.h"
 #include "graphics.h"
 
+#define H(cnt) ((cnt) / 360000)
+#define M(cnt) ((cnt) / 6000)
+#define S(cnt) ((cnt) / 100)
+#define KEY_A (GPIOA->IDR & GPIO_IDR_IDR0)
+#define KEY_B (GPIOB->IDR & GPIO_IDR_IDR15) 
+
 
 void EXTI0_IRQHandler(void) {
 	/* Обработчик прерывания от линии EXTI0, 
@@ -14,29 +20,31 @@ void EXTI0_IRQHandler(void) {
 }
 
 void TIM6_DAC_IRQHandler(void){
-	/* В обработчик заходит каждые 10 миллисекунд */
-	static uint32_t cnt = 0; // Кол-во миллисекунд
+	static uint32_t cnt_white = 0; // Кол-во миллисекунд, прошедшее для "Белого"
+	static uint32_t cnt_black = 0; // Кол-во миллисекунд, прошедшее для "Черного"
+	static char status = 'w';
+
+	if (KEY_A) status = 'w';
+	else if (!KEY_B) status = 'b';
 	
-	cnt += 1;
-	uint32_t h = cnt / 360000; // Получили кол-во целых часов
-	uint32_t m = cnt / 6000; // Получили кол-во целых минут
-	uint32_t s = cnt / 100; // Кол-во целых сек
+	if (status == 'w') {
+		cnt_white += 1;
+		draw_number(59 - (S(cnt_white) % 60), 49, 55); // Вывод секунд
+		draw_number(59 - (M(cnt_white) % 60), 34, 40); // Вывод минут
+		draw_number(2 - (H(cnt_white) % 60), 19, 25); // Вывод часов
+	} else if (status == 'b') {
+		cnt_black += 1;
+		draw_number(59 - (S(cnt_black) % 60), 99, 105);
+		draw_number(59 - (M(cnt_black) % 60), 84, 90);
+		draw_number(2 - (H(cnt_black) % 60), 69, 75);
+	}
 	
-	draw_number(59 - (s % 60), 30, 36); // Вывод секунд
-	draw_number(59 - (m % 60), 16, 22); // Вывод минут
-	draw_number(2 - (h % 60), 2, 8); // Вывод часов
 	// Сбросить событие обновления
 	TIM6->SR &= ~TIM_SR_UIF;
 }
 
 void TIM7_IRQHandler(void) {
-	static uint8_t count = 1;
-	
-	draw_sec_black();
-	if (count++ == 60) {
-		draw_min_black();
-		count = 1;
-	} 
+
 	// Сбросить событие обновления
 	TIM7->SR &= ~TIM_SR_UIF;
 }

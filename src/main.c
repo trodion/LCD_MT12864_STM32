@@ -21,18 +21,17 @@ int main() {
 	init_TIM7();
 
 	ms_delay(2000);
-	draw_byte(1, 0x1, 0xC, 0x00);
-	draw_byte(1, 0x0, 0xE, 0x00);
-	//start(); /* Запуск и первоначальная отрисовка */
+
+	start(); /* Запуск и первоначальная отрисовка */
 	//draw_min_white();
-	(TIM6->CR1 |= TIM_CR1_CEN);
+	
 	while(1){};
 	return 0;
 }
 
 void init_rcc() {
 	/* Включение тактирования портаов А, C, TIM6 */
-	RCC->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPCEN; 
+	RCC->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPCEN | RCC_APB2ENR_IOPBEN; 
 	RCC->APB1ENR |= RCC_APB1ENR_TIM6EN | RCC_APB1ENR_TIM7EN;
 }
 
@@ -62,13 +61,6 @@ void pin_init() {
 }
 
 void init_NVIC() {
-    /* Разрешены прерывания от нулевой ноги */
-    EXTI->IMR |= EXTI_IMR_IM0;
-    /* По нарастающему фронту */
-    EXTI->RTSR |= EXTI_RTSR_RT0;
-    
-    NVIC_SetPriority(EXTI0_IRQn, 0);
-    NVIC_EnableIRQ(EXTI0_IRQn);
 	NVIC_EnableIRQ(TIM7_IRQn);
 	NVIC_EnableIRQ(TIM6_DAC_IRQn);
 }

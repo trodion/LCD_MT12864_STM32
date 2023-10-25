@@ -26,7 +26,7 @@ void lcd_data(uint8_t byte);
 void lcd_clr();
 
 /* Нарисовать байт (столбец) */
-void draw_byte(uint8_t page, uint8_t x, uint8_t y, uint8_t byte);
+void draw_byte(uint8_t page, uint8_t col, uint8_t byte);
 
 /* Нарисовать изображение, определенное в массиве */
 void draw_image(uint8_t* p, uint16_t size);
@@ -37,8 +37,8 @@ void set_page(uint8_t page);
 /* Выбор столбца XY */
 void set_col(uint8_t x, uint8_t y);
 
-/* Нарисовать линию */
-void draw_line(uint8_t page, uint8_t X, uint8_t Y);
+/* Выбрать место куда запишем байт */
+void set_position(uint8_t page, uint8_t col);
 
 /* Задержка на ms микросекунд */
 void ms_delay(uint32_t ms);

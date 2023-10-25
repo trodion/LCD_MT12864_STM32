@@ -75,16 +75,15 @@ void lcd_clr() {
     }    
 }
 
-void draw_byte(uint8_t page, uint8_t x, uint8_t y, uint8_t byte) {
+void draw_byte(uint8_t page, uint8_t col, uint8_t byte) {
     set_page(page);
-    set_col(x, y);
+    set_col((col >> 4) & 0xF, col & 0xF);
     lcd_data(byte);
 }
 
 void draw_image(uint8_t* p, uint16_t size){
     for (uint16_t i = 0; i < size; ++i){
         if (i % 5 == 0 && i != 0) {
-            // for (uint8_t i = 0; i < 9; ++i) lcd_data(0xFF);
             lcd_data(0xFF);
         }
         lcd_data(*p);
@@ -101,10 +100,9 @@ void set_col(uint8_t x, uint8_t y){
     lcd_cmd(0x00 + y); /* Младший полубайт столбца */
 }
 
-void draw_line(uint8_t page, uint8_t X, uint8_t Y) {
+void set_position(uint8_t page, uint8_t col) {
     set_page(page);
-    set_col(X, Y);
-    lcd_data(0x00);
+    set_col((col >> 4) & 0xF, col & 0xF);
 }
 
 void ms_delay(uint32_t ms) {
