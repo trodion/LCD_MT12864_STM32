@@ -20,16 +20,19 @@ int main() {
 	init_TIM6(); /* Настроить таймер для отсчета времени */
 	init_TIM7();
 
-	ms_delay(2000);
+	//ms_delay(2000);
 
 	start(); /* Запуск и первоначальная отрисовка */
-	//draw_min_white();
 	
 	while(1){};
 	return 0;
 }
 
 void init_rcc() {
+	RCC->CR |= RCC_CR_HSEON; /* Включение HSE (внеш. источник тактирования) */
+	while (!(RCC->CR & RCC_CR_HSERDY)); /* Ожидание готовности */
+	RCC->CFGR |= RCC_CFGR_SW_HSE; /*  */
+	RCC->CR &= ~RCC_CR_HSION;
 	/* Включение тактирования портаов А, C, TIM6 */
 	RCC->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPCEN | RCC_APB2ENR_IOPBEN; 
 	RCC->APB1ENR |= RCC_APB1ENR_TIM6EN | RCC_APB1ENR_TIM7EN;
@@ -63,4 +66,6 @@ void pin_init() {
 void init_NVIC() {
 	NVIC_EnableIRQ(TIM7_IRQn);
 	NVIC_EnableIRQ(TIM6_DAC_IRQn);
+	NVIC_SetPriority(TIM6_DAC_IRQn, 1);
+	NVIC_SetPriority(TIM7_IRQn, 2);
 }

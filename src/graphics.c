@@ -24,7 +24,8 @@ void start() {
 	draw_number(59 - (0 % 60), 84, 90);
 	draw_number(2 - (0 % 60), 69, 75);
 	
-	(TIM6->CR1 |= TIM_CR1_CEN);
+	TIM6->CR1 |= TIM_CR1_CEN;
+	TIM7->CR1 |= TIM_CR1_CEN;
 }
 
 void draw_number(uint32_t number, uint8_t coord_high, uint8_t coord_low) {
