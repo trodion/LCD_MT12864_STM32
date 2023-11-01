@@ -12,19 +12,13 @@
 
 struct time {
 	uint32_t h, m, s; 
-	/* Кол-во миллисекунд, прошедшее для "Белого" и для "Черного"*/
+	/* Время, с которого начинается отсчет */
 	uint32_t cnt_white, cnt_black; 
-	/* Кол-во митнут, часов, с которых начинается отсчёт */
-	uint8_t m_max, h_max;
-	uint32_t stop;
 	char status;
 } t;
 
 
-void TIM6_DAC_IRQHandler(void) {
-	static uint32_t cnt_white = 5900; // Кол-во миллисекунд, прошедшее для "Белого"
-	static uint32_t cnt_black = 5900; // Кол-во миллисекунд, прошедшее для "Черного"
-	
+void TIM6_DAC_IRQHandler(void) {	
 	// Сбросить событие обновления
 	TIM6->SR &= ~TIM_SR_UIF;
 	
@@ -32,18 +26,18 @@ void TIM6_DAC_IRQHandler(void) {
 	else if (!KEY_B) t.status = 'b';
 	
 	if (t.status == 'w') {
-		cnt_white += 1;
-		t.s = 59 - (S(cnt_white) % 60);
-		t.m = t.m_max - (M(cnt_white) % 60);
-		t.h = t.h_max - (H(cnt_white) % 60);
+		t.cnt_white -= 1;
+		t.s = S(t.cnt_white) % 60;
+		t.m = M(t.cnt_white) % 60;
+		t.h = H(t.cnt_white);
 	} else if (t.status == 'b') {
-		cnt_black += 1;
-		t.s = 59 - (S(cnt_black) % 60);
-		t.m = t.m_max - (M(cnt_black) % 60);
-		t.h = t.h_max - (H(cnt_black) % 60);
+		t.cnt_black -= 1;
+		t.s = S(t.cnt_black) % 60;
+		t.m = M(t.cnt_black) % 60;
+		t.h = H(t.cnt_black);
 	}
 	// Закончилось время у одного из игроков
-	if (cnt_white == t.stop || cnt_black == t.stop) TIM6->CR1 &= ~TIM_CR1_CEN;
+	if (t.cnt_white == 0) TIM6->CR1 &= ~TIM_CR1_CEN;
 }
 
 void TIM7_IRQHandler(void) {
@@ -62,8 +56,7 @@ void TIM7_IRQHandler(void) {
 }
 
 void init_time() {
-	t.h_max = mode02.time_h;
-	t.m_max = mode02.time_m;
-	t.stop = (t.m_max + (t.h_max * 60) + 1) * 6000 - 100;
+	t.cnt_white = mode05.time_ms;
+	t.cnt_black = mode05.time_ms;
 	t.status = 'w';
 }

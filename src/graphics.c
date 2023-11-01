@@ -16,13 +16,13 @@ void start() {
 	draw_byte(4, 82, 0x99); draw_byte(4, 98, 0x99);
 	
 	/* Предварительная прорисовка времени */
-	draw_number(0 - (0 % 60), w_s, w_s + 6); // Вывод секунд
-	draw_number(mode02.time_m, w_m, w_m + 6); // Вывод минут
-	draw_number(mode02.time_h, w_h, w_h + 6); // Вывод часов
+	// draw_number(0 - (0 % 60), w_s, w_s + 6); // Вывод секунд
+	// draw_number(mode03.time_m, w_m, w_m + 6); // Вывод минут
+	// draw_number(mode03.time_h, w_h, w_h + 6); // Вывод часов
 
-	draw_number(0 - (0 % 60), b_s, b_s + 6);
-	draw_number(mode02.time_m, b_m, b_m + 6);
-	draw_number(mode02.time_h, b_h, b_h + 6);
+	draw_number(0, b_s, b_s + 6);
+	draw_number((mode05.time_ms / 6000) % 60, b_m, b_m + 6);
+	draw_number((mode05.time_ms / 360000), b_h, b_h + 6);
 	
 	TIM6->CR1 |= TIM_CR1_CEN;
 	TIM7->CR1 |= TIM_CR1_CEN;
