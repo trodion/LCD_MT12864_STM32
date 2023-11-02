@@ -19,5 +19,11 @@ extern struct time_config mode02;
 extern struct time_config mode03;
 extern struct time_config mode04;
 extern struct time_config mode05;
+extern struct time_config mode06;
+extern struct time_config mode07;
+extern struct time_config mode08;
+extern struct time_config conf;
+
+void init_conf();
 
 #endif

@@ -21,7 +21,7 @@ int main() {
 	init_TIM7();
 
 	//ms_delay(2000);
-
+	init_conf();
 	init_time();
 	start(); /* Запуск и первоначальная отрисовка */
 	
