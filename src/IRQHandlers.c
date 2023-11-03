@@ -21,11 +21,21 @@
 						draw_number(t.m, b_m, b_m + 6);\
 						draw_number(t.h, b_h, b_h + 6);\
 
+#define check_count if(t.count_w == conf[t.i].count_move && t.count_b == conf[t.i].count_move){\
+						t.i += 1;\
+						t.cnt_white += conf[t.i].time_ms;\
+						t.count_w = 0;\
+						t.cnt_black += conf[t.i].time_ms;\
+						t.count_b = 0;\
+					}\
+
 
 struct time {
 	uint32_t h, m, s; 
 	/* Время, с которого начинается отсчет */
-	uint32_t cnt_white, cnt_black; 
+	uint32_t cnt_white, cnt_black;
+	/* Подсчет числа ходов и периода */
+	uint8_t count_w, count_b, i;
 	char status;
 } t;
 
@@ -43,15 +53,18 @@ void TIM6_DAC_IRQHandler(void) {
 	}
 	
 	if (KEY_A && t.status == 'b'){
-		t.cnt_black += conf.adding_time;
+		t.cnt_black += conf[t.i].adding_time;
+		t.count_b += 1;
+		check_count;
 		update_watch(t.cnt_black);
 		update_screen_b;
 		t.status = 'w';
 	} 
 	else if (!KEY_B && t.status == 'w'){
-		t.cnt_white += conf.adding_time;
+		t.cnt_white += conf[t.i].adding_time;
 		update_watch(t.cnt_white);
-		update_screen_w
+		update_screen_w;
+		t.count_w += 1;
 		t.status = 'b';
 	} 
 	
@@ -71,7 +84,9 @@ void TIM7_IRQHandler(void) {
 }
 
 void init_time() {
-	t.cnt_white = conf.time_ms;
-	t.cnt_black = conf.time_ms;
+	t.i = 0;
+	t.count_w = 0; t.count_b = 0;
+	t.cnt_white = conf[t.i].time_ms;
+	t.cnt_black = conf[t.i].time_ms;
 	t.status = 'w';
 }

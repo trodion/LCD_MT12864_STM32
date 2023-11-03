@@ -22,7 +22,10 @@ extern struct time_config mode05;
 extern struct time_config mode06;
 extern struct time_config mode07;
 extern struct time_config mode08;
-extern struct time_config conf;
+extern struct time_config mode09;
+extern struct time_config mode10;
+
+extern struct time_config conf[];
 
 void init_conf();
 
